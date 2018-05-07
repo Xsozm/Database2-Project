@@ -44,11 +44,13 @@ public class DBApp {
 			Object[] objarrValues,
 			String[] strarrOperators) throws FileNotFoundException, ClassNotFoundException, IOException, DBEngineException {
 		Table tb = getTable(strTableName);
+		if(tb==null)return null;
 		return tb.selectFromTable(strTableName, strColumnName, objarrValues, strarrOperators);
 	}
 	
 	public void createBRINIndex(String strTableName,String strColName) throws FileNotFoundException, ClassNotFoundException, IOException, DBEngineException {
 		Table tb = getTable(strTableName);
+		if(tb==null) return;
 		tb.createBRINIndex(strTableName, strColName);
 		
 	}
@@ -138,7 +140,7 @@ public class DBApp {
 		}
 		table.updateTuple(objKey, htblColNameValue);
 		for(String str : table.brin.keySet()) {
-			if(table.brin.get(str)) {
+			if(table.brin.contains(str) && table.brin.get(str)) {
 				table.createBRINIndex(strTableName, str);
 			}
 		}
@@ -157,7 +159,7 @@ public class DBApp {
 		ois.close();
 		table.deleteTuple(htblColNameValue);
 		for(String str : table.brin.keySet()) {
-			if(table.brin.get(str)) {
+			if(table.brin.contains(str) && table.brin.get(str)) {
 				table.createBRINIndex(strTableName, str);
 			}
 		}

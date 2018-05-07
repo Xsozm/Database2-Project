@@ -12,7 +12,7 @@ public class Main {
 
 		 String strTableName = "Student";
 		 
-		/* Hashtable htblColNameType = new Hashtable();
+		 Hashtable htblColNameType = new Hashtable();
 		 htblColNameType.put("id", "java.lang.Integer");
 		 htblColNameType.put("name", "java.lang.String");
 		 htblColNameType.put("gpa", "java.lang.Double");
@@ -106,20 +106,25 @@ public class Main {
 		 htblColNameValue.put("gpa", new Double(0.95));
 		 a.insertIntoTable(strTableName, htblColNameValue);
 		 htblColNameValue.clear();
-		 */
 		 
-		 a.createBRINIndex(strTableName, "gpa");
+		 
+		 //a.createBRINIndex(strTableName, "gpa");
 		 
 		 
 		 Object[]objarrValues = new Object[2];
-		 objarrValues[0] = new Double( 0.75 );
-		 objarrValues[1] = new Double( 1.0 );
+		 objarrValues[0] = new Double( 0.99 );
+		 objarrValues[1] = new Double( 2.0 );
 		 String[] strarrOperators = new String[2];
 		 strarrOperators[0] = ">=";
 		 strarrOperators[1] = "<";
 		 Iterator resultSet = a.selectFromTable(strTableName, "gpa",
 				 objarrValues, strarrOperators );
-		// System.out.println(resultSet.hasNext());
+				 
+		while(resultSet.hasNext()) {
+			Tuple p = (Tuple) resultSet.next();
+			System.out.println(p.get(1));
+			
+		}
 
 		// UNCOMMENT AFTER THE INSERTIONS IN THE SECOND RUN
 
@@ -148,11 +153,16 @@ public class Main {
 		// htblColNameValue.put("gpa", new Double(0.95));
 		// a.deleteFromTable(strTableName, htblColNameValue);
 
+		 File table = new File("./data/FirstApp/"+strTableName+"/"+strTableName+".class");
+			if(!table.exists()) {
+				System.out.println("NO SUCH TABLE EXIST !");
+				return;
+			}
 		for (int i = 0; i < 5; i++) {
 			System.out.println("============== PAGE " + i + " ==========");
 			printPage(i);
 		}
-		File table = new File("./data/FirstApp/Student/Student.class");
+		
 		ObjectInputStream ooo = new ObjectInputStream(new FileInputStream(table));
 		Table t = (Table)ooo.readObject();
 		System.out.println("TABLE get TYPE: " + t.getPrimaryType() );
@@ -163,6 +173,9 @@ public class Main {
 		try {
 			//File tableFile = new File("./data/FirstApp/Student/Student_" + pageNum + ".class");
 			File tableFile = new File("./data/FirstApp/Student/Student" + "_ref_gpa"+ + pageNum  + ".class");
+			if(!tableFile.exists()) {
+				return ;
+			}
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(tableFile));
 
 			pageref page = (pageref) ois.readObject();

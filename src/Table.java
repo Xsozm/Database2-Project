@@ -94,9 +94,9 @@ public class Table implements Serializable {
 		 
 		 	
 		}
-		//System.out.println(MAX+" "+MIN);
+		System.out.println(MAX+" "+MIN);
 		//System.out.println(brin.get(strColumnName));
-		 if( brin.get(strColumnName)) {
+		 if(brin.contains(strColumnName) && brin.get(strColumnName)) {
 			 //System.out.println("gggg");
 			 return selectspecial( strTableName,  strColumnName,type,MAX, MIN);
 		 }else {
@@ -112,26 +112,32 @@ public class Table implements Serializable {
 
 	
 	
-	private Iterator normalselect(String strTableName, String strColumnName, String type, Double mAX, Double mIN) throws FileNotFoundException, IOException, ClassNotFoundException {
+	private Iterator normalselect(String strTableName, String strColumnName, String type, Double mIN , Double mAX ) throws FileNotFoundException, IOException, ClassNotFoundException {
 		LinkedList<Tuple> L= new LinkedList<Tuple>();
-
+		int idx =0 ;
+		for(String str :htblColNameType.keySet()) {
+			if(str.equals(strColumnName))
+				break;
+			idx++;
+		}
+		
 		for(int y=0;y<=curPageIndex;y++) {
-		File f = new File(path + tablename + "_ref_" +strColumnName+ y + ".class");
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-		pageref curPage = (pageref) ois.readObject();
-	//	Double minpage = (Double) curPage.a.get(0).obj;
-		//Double maxpage = (Double) curPage.a.get(curPage.getN()).obj;
-				for(int j=0;j<curPage.a.size();j++) {
-					point p = curPage.a.get(j);
-					int pageidx = p.pageindex;
-					int co= p.recordnumber;
-					//load page hena
-					File ff = new File(path + tablename + "_" + pageidx + ".class");
-					ObjectInputStream u = new ObjectInputStream(new FileInputStream(ff));
-					Tuple d =  ((Page) ois.readObject()).getA()[co];
-					double v=(double) d.get(co);
-					if(v>=mIN && v<=mAX)
-						L.add(d);
+			File f = new File(path + tablename + "_" + y + ".class");
+			if (!f.exists())
+				continue;
+			
+			
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+			Page curPage = (Page) ois.readObject();
+			Tuple[] a = (Tuple[]) curPage.getObjects();
+			for (int j = 0; j < a.length; j++) {
+					Tuple t = a[j];
+					if(t==null)continue;
+					double v=(double) t.get(idx);
+					if(v>=mIN && v<=mAX) {
+						System.out.println("inserted");
+						L.add(t);
+					}
 
 							
 				}
