@@ -119,10 +119,14 @@ public class Main {
 		 strarrOperators[1] = "<";
 		 Iterator resultSet = a.selectFromTable(strTableName, "gpa",
 				 objarrValues, strarrOperators );
-				 
+		System.out.println();
+		System.out.println("Records Fetched ");
 		while(resultSet.hasNext()) {
 			Tuple p = (Tuple) resultSet.next();
-			System.out.println(p.get(1));
+			if(p==null)continue;
+			for(int i=0;i<p.sz-1;i++)
+				System.out.print(p.get(i)+"  ");
+			System.out.println();
 			
 		}
 
@@ -158,6 +162,8 @@ public class Main {
 				System.out.println("NO SUCH TABLE EXIST !");
 				return;
 			}
+			System.out.println();
+		System.out.println("BRIN INDEX PAGES");	
 		for (int i = 0; i < 5; i++) {
 			System.out.println("============== PAGE " + i + " ==========");
 			printPage(i);
@@ -165,7 +171,7 @@ public class Main {
 		
 		ObjectInputStream ooo = new ObjectInputStream(new FileInputStream(table));
 		Table t = (Table)ooo.readObject();
-		System.out.println("TABLE get TYPE: " + t.getPrimaryType() );
+		//System.out.println("TABLE get TYPE: " + t.getPrimaryType() );
 
 	}
 

@@ -94,14 +94,17 @@ public class Table implements Serializable {
 		 
 		 	
 		}
-		System.out.println(MAX+" "+MIN);
-		//System.out.println(brin.get(strColumnName));
-		 if(brin.contains(strColumnName) && brin.get(strColumnName)) {
-			 //System.out.println("gggg");
-			 return selectspecial( strTableName,  strColumnName,type,MAX, MIN);
-		 }else {
+		try {
+			if(  brin.get(strColumnName)) {
+				 return selectspecial( strTableName,  strColumnName,type,MAX, MIN);
+			}
+		}
+		catch(Exception e){
 			 return normalselect(strTableName,  strColumnName,type,MAX, MIN);
-		 }
+
+		}
+		return null;
+		 
 		 
 		
 		
@@ -135,7 +138,7 @@ public class Table implements Serializable {
 					if(t==null)continue;
 					double v=(double) t.get(idx);
 					if(v>=mIN && v<=mAX) {
-						System.out.println("inserted");
+						System.out.println("one Fetched Done By by sequential search ");
 						L.add(t);
 					}
 
@@ -150,6 +153,7 @@ public class Table implements Serializable {
 
 	private Iterator<Tuple> selectspecial(String strTableName, String strColumnName, String type, Double mIN, Double mAX) throws FileNotFoundException, IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
+
 		LinkedList<Tuple> L= new LinkedList<Tuple>();
 		int y= 0 ;
 
@@ -159,7 +163,6 @@ public class Table implements Serializable {
 		pageref curPage = (pageref) ois.readObject();
 		Double minpage = Double.parseDouble(curPage.a.get(0).d.toString());
 		Double maxpage = Double.parseDouble(curPage.a.get(curPage.getN()-1).d.toString());
-		//System.out.println(minpage+" "+maxpage+" "+mAX);
 		if(mIN>=minpage && mIN<=maxpage)
 			break;
 		}
@@ -175,11 +178,16 @@ public class Table implements Serializable {
 					int re= p.recordnumber;
 					File ff = new File(path + tablename + "_" + pageidx + ".class");
 					ObjectInputStream u = new ObjectInputStream(new FileInputStream(ff));
-					//System.out.println(pageidx);
-					//System.out.println(Double.parseDouble(p.d.toString()));
-					if(Double.parseDouble(p.d.toString())>=mIN &&  Double.parseDouble(p.d.toString())<=mAX) {
-					L.add(( (Page) u.readObject()).getA()[re]);
-					System.out.println("inserted one tuple");
+					//System.out.println(mIN+" "+mAX +" "+Double.parseDouble(p.d.toString()));
+					double value = Double.parseDouble(p.d.toString()) ;
+					if(value>=mIN &&  value<=mAX) {
+						File page = new File(path + tablename + "_" + pageidx + ".class");						
+						ObjectInputStream o = new ObjectInputStream(new FileInputStream(page));
+						Page ppp = (Page) o.readObject();
+						L.add(ppp.getA()[re]);
+						
+					
+						System.out.println("one Fetched Done By by Brin INdex ");
 					}
 					
 					
@@ -194,6 +202,7 @@ public class Table implements Serializable {
 	
 
 	public void createBRINIndex(String strTableName,String strColName) throws DBEngineException, FileNotFoundException, IOException, ClassNotFoundException{
+
 		int idx =0 ;
 		for(String str :htblColNameType.keySet()) {
 			if(str.equals(strColName))
@@ -216,7 +225,7 @@ public class Table implements Serializable {
 				Tuple t = aa[j];
 				if(t==null)continue;
 				//System.out.println(t.get(idx).toString());
-				a.add(new point((t.get(idx)),curPageIndex,j));
+				a.add(new point((t.get(idx)),i,j));
 			}
 
 		
